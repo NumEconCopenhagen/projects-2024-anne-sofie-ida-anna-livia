@@ -1,9 +1,9 @@
 # \[Group name\]
 
 **Group members:**
-- A
-- B
-- C
+- Anna Livia Bojlén Lambert
+- Anne Sophie Warberg Hækkerup
+- Ida Skov Nilausen
 
 This repository contains  
 1. Inaugural project. 
