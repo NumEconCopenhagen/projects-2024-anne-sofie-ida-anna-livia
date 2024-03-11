@@ -1,9 +1,9 @@
 # \[Anne Sophie, Ida & Anna Livia\]
 
-**Group Members:**
-- Anne Sophie
-- Ida
-- Anna Livia
+**Group members:**
+- A
+- B
+- C
 
 This repository contains  
 1. Inaugural project. 
