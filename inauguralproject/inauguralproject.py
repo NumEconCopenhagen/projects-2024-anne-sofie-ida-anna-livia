@@ -16,22 +16,22 @@ class ExchangeEconomyClass:
         par.w2b = 1 - 0.3
 
     def utility_A(self,x1A,x2A):
-        return  x1a**self.par.alpha*x2a**(1-self.par.alpha)
+        return  x1A**self.par.alpha*x2A**(1-self.par.alpha)
 
     def utility_B(self,x1B,x2B):
-        return x1b**self.par.beta*x2b**(1-self.par.beta)
+        return x1B**self.par.beta*x2B**(1-self.par.beta)
 
     def demand_A(self,p1):
         par = self.par
-        x1a = par.alpha*(par.w1a*p1+par.w2a*p2)/p1
-        x2a = (1-par.alpha)*(par.w1a*p1+par.w2a*p2)/p2
-        return x1a, x2a
+        x1A = par.alpha*(par.w1a*p1+par.w2a*p2)/p1
+        x2A = (1-par.alpha)*(par.w1a*p1+par.w2a*p2)/p2
+        return x1A, x2A
 
     def demand_B(self,p1):
         par = self.par
-        x1b = par.beta*(par.w1b*p1+par.w2b*p2)/p1
-        x2b = (1-par.beta)*(par.w1b*p1+par.w2b*p2)/p2
-        return x1b, x2b
+        x1B = par.beta*(par.w1a*p1+par.w2b*p2)/p1
+        x2B = (1-par.beta)*(par.w1b*p1+par.w2b*p2)/p2
+        return x1B, x2B
 
 
     def check_market_clearing(self,p1):
