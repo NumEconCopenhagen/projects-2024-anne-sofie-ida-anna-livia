@@ -13,14 +13,16 @@ class ExchangeEconomyClass:
         # b. endowments
         par.w1A = 0.8
         par.w2A = 0.3
-        par.w1B = 1 - 0.8
-        par.w2B = 1 - 0.3
+        par.w1B = 1 - par.w1A
+        par.w2B = 1 - par.w2A
 
     def utility_A(self,x1A,x2A):
-        return  x1A**self.par.alpha*x2A**(1-self.par.alpha)
+        par= self.par
+        return  x1A**par.alpha*x2A**(1-par.alpha)
 
     def utility_B(self,x1B,x2B):
-        return x1B**self.par.beta*x2B**(1-self.par.beta)
+        par=self.par
+        return x1B**par.beta*x2B**(1-par.beta)
 
     def demand_A(self,p1):
         p2 = 1 #p2 is numeraire
@@ -75,6 +77,32 @@ class ExchangeEconomyClass:
             t += 1
 
         return p1
+
+    def solve_discrete(self, p1):
+        par=self.par
+        opt=SimpleNamespace()
+
+        # x1A, x2A=self.demand_A(p1)
+        # uA=self.utility_A(x1A, x2A)
+
+        x1B, x2B=self.demand_B(p1)
+
+        uA=self.utility_A(1-x1B, 1-x2B)
+
+        excess=self.check_market_clearing(p1)
+
+        unmet = (excess[0]<0) | (excess[1]<0)
+        uA[unmet]=-np.inf
+        print(unmet)
+
+        j = np.argmax(uA)
+
+        opt.p1 = p1[j]
+        opt.forbrug = self.demand_A(p1[j])
+
+        return opt
+
+
 
     def solve(self):
         par = self.par
