@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+import numpy as np
 
 class ExchangeEconomyClass:
 
@@ -35,7 +36,6 @@ class ExchangeEconomyClass:
         x2B = (1-par.beta)*(par.w1B*p1+par.w2B*p2)/p2
         return x1B, x2B
 
-
     def check_market_clearing(self,p1):
 
         par = self.par
@@ -47,4 +47,35 @@ class ExchangeEconomyClass:
         eps2 = x2A-par.w2A + x2B-(1-par.w2A)
 
         return eps1,eps2
+
+    def walras(self, p1, eps=1e-8, maxiter=500):
+        t = 0
+        while True:
+
+            # i. excess demand
+            excess = self.check_market_clearing(p1)
+
+            # ii: ensures that the break conditions hold, i.e. that the excess demand for good 1 is not smaller then epsilon
+            # and that the number of iterations (t) isn't higher than 500 
+            if np.abs(excess[0]) < eps or t >= maxiter:
+                print(f'{t:3d}: p1 = {p1:12.8f} -> excess demand -> {excess[0]:14.8f}')
+                break
+
+            # iii. updates p1
+            p1 += excess[0]
+
+            # iv. return and a lot of formatting for printing
+            if t < 5 or t % 25 == 0:
+                print(f'{t:3d}: p1 = {p1:12.8f} -> excess demand -> {excess[0]:14.8f}')
+            elif t == 5:
+                print('   ...')
+
+            # v. update t (interation counter)
+            t += 1
+
+        return p1
+
+
+
+        
 
