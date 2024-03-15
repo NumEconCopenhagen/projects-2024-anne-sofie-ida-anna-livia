@@ -32,7 +32,7 @@ class ExchangeEconomyClass:
     def demand_B(self,p1):
         p2 = 1 #p2 is numeraire
         par = self.par
-        x1B = par.beta*(par.w1A*p1+par.w2B*p2)/p1
+        x1B = par.beta*(par.w1B*p1+par.w2B*p2)/p1
         x2B = (1-par.beta)*(par.w1B*p1+par.w2B*p2)/p2
         return x1B, x2B
 
@@ -76,7 +76,6 @@ class ExchangeEconomyClass:
 
         return p1
 
-        
     def solve(self):
         par = self.par
         sol = self.solve
@@ -90,13 +89,13 @@ class ExchangeEconomyClass:
         bounds = ((1e-8,1),(1e-8, 1))
     
         # c. call solver
-        x0 = [(par.m/par.p1)/2,(par.m/par.p2)/2]
+        x0 = [par.w1A, par.w2A]
         result = optimize.minimize(obj,x0,method='SLSQP',bounds=bounds,constraints=constraints)
         
         # d. save
         sol.x1 = result.x[0]
         sol.x2 = result.x[1]
-        sol.u = model.u_func(sol.x1,sol.x2)
+        sol.u = self.u_func(sol.x1,sol.x2)
 
 
         
