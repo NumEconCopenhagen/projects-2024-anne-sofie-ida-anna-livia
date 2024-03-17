@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 import numpy as np
+from scipy import optimize
 
 class ExchangeEconomyClass:
 
@@ -101,29 +102,9 @@ class ExchangeEconomyClass:
         opt.forbrug = self.demand_A(p1[j])
 
         return opt
-
-
-
-    def solve(self):
-        par = self.par
-        sol = self.solve
     
-        # a. objective function (to minimize) 
-        obj = lambda x: -self.utility_A(x[0],x[1]) # minimize -> negative of utility
+
         
-        # b. constraints and bounds
-        constraint = lambda x: x1B**self.par.beta*x2B**(1-self.par.beta)>=w1B**self.par.beta*w2B**(1-self.par.beta)
-        constraints = ({'type':'ineq','fun':constraint})
-        bounds = ((1e-8,1),(1e-8, 1))
-    
-        # c. call solver
-        x0 = [par.w1A, par.w2A]
-        result = optimize.minimize(obj,x0,method='SLSQP',bounds=bounds,constraints=constraints)
-        
-        # d. save
-        sol.x1 = result.x[0]
-        sol.x2 = result.x[1]
-        sol.u = self.u_func(sol.x1,sol.x2)
 
 
         
