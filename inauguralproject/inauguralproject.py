@@ -102,7 +102,34 @@ class ExchangeEconomyClass:
         opt.forbrug = self.demand_A(p1[j])
 
         return opt
+
+    def solve(self):
+        from ExchangeEconomyClass import utility_A
+        from ExchangeEconomyClass import utility_B
+        
+        # Prepare for solution
+        self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
+        par = self.par  # Use self to refer to instance attributes
+        obj = lambda x: -utility_A(x[0], x[1])
+
+        constraint = lambda x: utility_B(1 - x[0], 1 - x[1]) - utility_B(1 - par.w1A, 1 - par.w2A)
+        constraints = {'type': 'ineq', 'fun': constraint}
+        bounds = ((1e-8, 1), (1e-8, 1))
+
+        x0 = [par.w1A, par.w2A]
+        result = minimize(obj, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+
+        # Update solution
+        self.sol.x1 = result.x[0]
+        self.sol.x2 = result.x[1]
+        self.sol.u = utility_A(self.sol.x1, self.sol.x2)
+        
     
+ 
+    
+        
+
+
 
         
 
