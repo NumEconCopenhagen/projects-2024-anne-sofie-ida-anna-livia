@@ -79,12 +79,10 @@ class ExchangeEconomyClass:
 
         return p1
 
-    def solve_discrete(self, p1):
+    # Slettes? Vi bruger den ikke alligevel
+    # def solve_discrete(self, p1):
         par=self.par
         opt=SimpleNamespace()
-
-        # x1A, x2A=self.demand_A(p1)
-        # uA=self.utility_A(x1A, x2A)
 
         x1B, x2B=self.demand_B(p1)
 
