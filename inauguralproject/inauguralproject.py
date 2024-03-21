@@ -79,27 +79,6 @@ class ExchangeEconomyClass:
 
         return p1
 
-    # Slettes? Vi bruger den ikke alligevel
-    # def solve_discrete(self, p1):
-        par=self.par
-        opt=SimpleNamespace()
-
-        x1B, x2B=self.demand_B(p1)
-
-        uA=self.utility_A(1-x1B, 1-x2B)
-
-        excess=self.check_market_clearing(p1)
-
-        unmet = (excess[0]<0) | (excess[1]<0)
-        uA[unmet]=-np.inf
-        print(unmet)
-
-        j = np.argmax(uA)
-
-        opt.p1 = p1[j]
-        opt.forbrug = self.demand_A(p1[j])
-
-        return opt
 
     def solve(self):
         # Prepare for solution
@@ -108,7 +87,6 @@ class ExchangeEconomyClass:
 
         # b. set objective function, constraints and bounds
         obj = lambda x: -self.utility_A(x[0], x[1])
-        constraint = lambda x: self.utility_B(1 - x[0], 1 - x[1]) - self.utility_B(1 - par.w1A, 1 - par.w2A)
         constraints = {'type': 'ineq', 'fun': constraint}
         bounds = ((1e-8, 1), (1e-8, 1))
 
