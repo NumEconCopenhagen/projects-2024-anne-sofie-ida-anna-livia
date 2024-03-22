@@ -1,8 +1,8 @@
 # \[Anne Sophie, Ida & Anna Livia\]
 
 **Group members:**
-- Anne Sophie Warberg Hækkerup
 - Anna Livia Lambert
+- Anne Sophie Warberg Hækkerup
 - Ida Nilausen
 
 This repository contains  
