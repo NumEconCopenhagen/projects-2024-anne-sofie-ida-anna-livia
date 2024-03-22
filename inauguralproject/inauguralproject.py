@@ -87,12 +87,11 @@ class ExchangeEconomyClass:
 
         # b. set objective function, constraints and bounds
         obj = lambda x: -self.utility_A(x[0], x[1])
-        constraints = {'type': 'ineq', 'fun': constraint}
         bounds = ((1e-8, 1), (1e-8, 1))
 
         # c. optimize using scipy
         x0 = [par.w1A, par.w2A]
-        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds, constraints=constraints)
+        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds)
 
         # Update solution
         self.sol.x1 = result.x[0]
