@@ -1,9 +1,9 @@
 # \[Anne Sophie, Ida & Anna Livia\]
 
 **Group members:**
-- A
-- B
-- C
+- Anne Sophie Warberg Hækkerup
+- Anna Livia Lambert
+- Ida Nilausen
 
 This repository contains  
 1. Inaugural project. 
