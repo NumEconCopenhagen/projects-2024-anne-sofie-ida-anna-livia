@@ -118,6 +118,28 @@ class ExchangeEconomyClass:
         self.sol.x1 = result_2.x[0]
         self.sol.x2 = result_2.x[1]
         self.sol.u = self.utility_A(self.sol.x1, self.sol.x2)
+    
+    def market_clearing_p(self, P1):
+        """
+        finds the market clearing price based on the lowest market error.
+        Takes a price vector P1 as input.
+        """
+        eps1,eps2 = self.check_market_clearing(P1)
+
+        #difference between vectors
+        diff = eps1-eps2
+
+        #find minimum error
+        error_min = abs(diff).min()
+
+        #pass solutions to vector
+        vec = abs(diff) == error_min
+
+        #calculate price of P1 price vector
+        market_price = P1[vec][0]
+
+        return market_price
+
  
     
         
