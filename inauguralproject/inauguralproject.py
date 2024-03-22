@@ -18,14 +18,23 @@ class ExchangeEconomyClass:
         par.w2B = 1 - par.w2A
 
     def utility_A(self,x1A,x2A):
+        """
+        Returns the utility of agent A. Takes x1A and x2A as arguments.
+        """
         par= self.par
         return  x1A**par.alpha*x2A**(1-par.alpha)
 
     def utility_B(self,x1B,x2B):
+        """
+        Returns the utility of agent B. Takes x1A and x2A as arguments.
+        """
         par=self.par
         return x1B**par.beta*x2B**(1-par.beta)
 
     def demand_A(self,p1):
+        """
+        Returns the demand of agent A. Takes the prices of good 1 and good 2 respectively as arguments.
+        """
         p2 = 1 #p2 is numeraire
         par = self.par
         x1A = par.alpha*(par.w1A*p1+par.w2A*p2)/p1
@@ -33,6 +42,9 @@ class ExchangeEconomyClass:
         return x1A, x2A
 
     def demand_B(self,p1):
+        """
+        Returns the demand of agent B. Takes the prices of good 1 and good 2 respectively as arguments.
+        """
         p2 = 1 #p2 is numeraire
         par = self.par
         x1B = par.beta*(par.w1B*p1+par.w2B*p2)/p1
@@ -40,6 +52,9 @@ class ExchangeEconomyClass:
         return x1B, x2B
 
     def check_market_clearing(self,p1):
+        """
+        Calculates the market error on the market for good 1 and good 2. Takes p1 as argument.
+        """
 
         par = self.par
 
@@ -52,7 +67,9 @@ class ExchangeEconomyClass:
         return eps1,eps2
 
     def walras(self, p1, eps=1e-8, maxiter=500):
-
+        """
+        Returns the market clearing price based on the lowest market error. takes p1 as argument.
+        """
         t = 0
         while True:
 
@@ -81,6 +98,8 @@ class ExchangeEconomyClass:
 
 
     def solve(self):
+        """
+        """
         # Prepare for solution
         self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
         par = self.par 
