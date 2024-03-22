@@ -91,7 +91,9 @@ class ExchangeEconomyClass:
 
         # c. optimize using scipy
         x0 = [par.w1A, par.w2A]
-        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds)
+        constraint = lambda x: self.utility_B(1 - x[0], 1 - x[1]) - self.utility_B(1 - par.w1A, 1 - par.w2A)
+        constraints = {'type': 'ineq', 'fun': constraint}
+        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds,constraints=constraints)
 
         # Update solution
         self.sol.x1 = result.x[0]
