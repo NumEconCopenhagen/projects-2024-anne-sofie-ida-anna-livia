@@ -34,6 +34,34 @@ def data_HISB3():
     FOEDSLER = HISB3.get_data(params=params)
     return FOEDSLER
 
+def data_HFUDD10():
+   hfudd = DstApi('HFUDD10')
+   params1={'table': 'hfudd10',
+    'format': 'BULK',
+    'lang': 'en',
+    'variables': [{'code': 'BOPOMR', 'values': ['000']},
+    {'code': 'HERKOMST', 'values': ['TOT']},
+    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80', 'H90']},
+    {'code': 'ALDER', 'values': ['20-24', '25-29', '30-34', '35-39', '40-44']},
+    {'code': 'KØN', 'values': ['K']},
+    {'code': 'Tid', 'values': ['>=2007<2008']}]}
+   HFUDD10 = hfudd.get_data(params=params1)
+   return HFUDD10
+
+def data_HFUDD11():
+    hfudd = DstApi('HFUDD11')
+    params2={'table': 'hfudd11',
+    'format': 'BULK',
+    'lang': 'en',
+    'variables': [{'code': 'BOPOMR', 'values': ['000']},
+    {'code': 'HERKOMST', 'values': ['TOT']},
+    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80', 'H90']},
+    {'code': 'ALDER', 'values': ['20-24', '25-29', '30-34', '35-39', '40-44']},
+    {'code': 'KØN', 'values': ['K']},
+    {'code': 'Tid', 'values': ['*']}]}
+    HFUDD11 = hfudd.get_data(params=params2)
+    return HFUDD11
+
 def keep_regs(df, regs):
         """ Example function. Keep only the subset regs of regions in data.
 
