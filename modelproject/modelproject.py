@@ -20,3 +20,10 @@ def solve_ss(alpha, c):
     result = optimize.root_scalar(obj,bracket=[0.1,100],method='bisect')
     
     return result
+
+def solve_ss_z(sE, eps, phi, n, g, beta, s, delta, alpha):
+
+obj_zss = lambda zss: zss-(1/(1-sE))**(eps+phi)*(1/((1+n)(1+g)))**beta*(s+(1-delta)*zss)**(1-alpha)*zss**alpha
+result = optimize.root_scalar(obj_z,bracket=[0.1,100],method='brentq')
+
+print('the steady state for z is',result.root)
