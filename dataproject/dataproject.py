@@ -41,7 +41,7 @@ def data_HFUDD10():
     'lang': 'en',
     'variables': [{'code': 'BOPOMR', 'values': ['000']},
     {'code': 'HERKOMST', 'values': ['TOT']},
-    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80', 'H90']},
+    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80']},
     {'code': 'ALDER', 'values': ['20-24', '25-29', '30-34', '35-39', '40-44']},
     {'code': 'KØN', 'values': ['K']},
     {'code': 'Tid', 'values': ['>=2007<2008']}]}
@@ -55,26 +55,9 @@ def data_HFUDD11():
     'lang': 'en',
     'variables': [{'code': 'BOPOMR', 'values': ['000']},
     {'code': 'HERKOMST', 'values': ['TOT']},
-    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80', 'H90']},
+    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80']},
     {'code': 'ALDER', 'values': ['20-24', '25-29', '30-34', '35-39', '40-44']},
     {'code': 'KØN', 'values': ['K']},
     {'code': 'Tid', 'values': ['*']}]}
     HFUDD11 = hfudd.get_data(params=params2)
     return HFUDD11
-
-def keep_regs(df, regs):
-        """ Example function. Keep only the subset regs of regions in data.
-
-        Args:
-            df (pd.DataFrame): pandas dataframe 
-
-        Returns:
-            df (pd.DataFrame): pandas dataframe
-
-        """ 
-        
-        for r in regs:
-            I = df.reg.str.contains(r)
-            df = df.loc[I == False] # keep everything else
-        
-        return df 
