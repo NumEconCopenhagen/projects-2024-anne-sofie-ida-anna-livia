@@ -192,6 +192,53 @@ class ExchangeEconomyClass:
         market_price = P1[vec][0]
 
         return market_price
+    
+    def draw_pairs(self):
+        """
+        Args:
+        Returns: 50 pairs of endowments
+        """
+        np.random.seed(2000)
+        # Generate 50 pairs of endowments
+        W_pairs = []
+        for _ in range(50):
+            pair = (np.random.uniform(0, 1), np.random.uniform(0, 1))
+            W_pairs.append(pair)
+        return W_pairs
+    
+    def equilibrium(self):
+        """
+        Args: p1, eps, maxiter
+        Returns: equilibrium price and allocation if in set C
+        """
+        # a. use draw_pairs to get 50 pairs of endowments
+        W_pairs = self.draw_pairs()
+        # b. initiate empty list for equilibrium prices
+        equilibrium_prices = []
+        # c. initiate empty list for equilibrium allocations
+        equilibrium_allocations = []
+        # d. initiate empty list for equilibrium utilities
+        equilibrium_utilities = []
+        # e. loop through pairs of endowments
+        for W in W_pairs:
+            # i. set endowments
+            self.par.w1A = W[0]
+            self.par.w2A = W[1]
+            self.par.w1B = 1 - W[0]
+            self.par.w2B = 1 - W[1]
+            # ii. find equilibrium price using inital guess of 2.5
+            p1 = self.walras(2.5, eps=1e-8, maxiter=500)
+            # iii. find equilibrium allocation for A
+            self.solve()
+            # iv. append equilibrium price to equilibrium_prices
+            equilibrium_prices.append(p1)
+            # v. append equilibrium allocation to equilibrium_allocations
+            equilibrium_allocations.append((self.sol.x1, self.sol.x2))
+            # vi. append equilibrium utility to equilibrium_utilities
+            equilibrium_utilities.append(self.sol.u)
+        
+    
+
 
  
     
