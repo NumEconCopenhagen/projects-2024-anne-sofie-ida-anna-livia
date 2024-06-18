@@ -5,9 +5,9 @@ from dstapi import DstApi
 
 def data_NAN1():
     """Fetches data on GDP growth in pct from DST using an API call"""
-    #write in api request
+    # We import the data using an API.
     NAN1 = DstApi('NAN1') 
-    #get the correct variables
+    # We specify which variables we are interested in with the function "params".
     params = {'table': 'nan1',
     'format': 'BULK',
     'lang': 'en',
@@ -20,9 +20,9 @@ def data_NAN1():
 
 def data_HISB3():
     """Fetches data on childbirths from DST using their API call"""
-    #api call
+    # We import the data using an API.
     HISB3 = DstApi('HISB3') 
-    #select variables
+    # We specify which variables we are interested in with the function "params".
     params = {'table': 'hisb3',
     'format': 'BULK',
     'lang': 'en',
@@ -33,15 +33,17 @@ def data_HISB3():
     return FOEDSLER
 
 def data_HFUDD11():
-    hfudd = DstApi('HFUDD11')
-    params2={'table': 'hfudd11',
+    """Fetches data on women's educational atainment from DST using their API call"""
+    # We import the data using an API.
+    HFUDD11 = DstApi('HFUDD11')
+    # We specify which variables we are interested in with the function "params".
+    params={'table': 'hfudd11',
     'format': 'BULK',
     'lang': 'en',
     'variables': [{'code': 'BOPOMR', 'values': ['000']},
-    {'code': 'HERKOMST', 'values': ['TOT']},
-    {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80']},
+    {'code': 'HERKOMST', 'values': ['TOT']}, {'code': 'HFUDD', 'values': ['TOT', 'H10', 'H20', 'H30', 'H40', 'H50', 'H60', 'H70', 'H80']},
     {'code': 'ALDER', 'values': ['20-24', '25-29', '30-34', '35-39', '40-44']},
     {'code': 'KØN', 'values': ['K']},
     {'code': 'Tid', 'values': ['*']}]}
-    HFUDD11 = hfudd.get_data(params=params2)
-    return HFUDD11
+    HFUDD = HFUDD11.get_data(params=params)
+    return HFUDD
