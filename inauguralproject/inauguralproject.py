@@ -19,48 +19,68 @@ class ExchangeEconomyClass:
 
     def utility_A(self,x1A,x2A):
         """
-        Returns the utility of agent A. Takes x1A and x2A as arguments.
+        Args: x1A, x2A
+        Returns: utility of agent A
         """
         par= self.par
         return  x1A**par.alpha*x2A**(1-par.alpha)
 
     def utility_B(self,x1B,x2B):
         """
-        Returns the utility of agent B. Takes x1A and x2A as arguments.
+        Args: x1B, x2B
+        Returns: utility of agent B
         """
         par=self.par
         return x1B**par.beta*x2B**(1-par.beta)
 
     def demand_A(self,p1):
         """
-        Returns the demand of agent A. Takes the prices of good 1 and good 2 respectively as arguments.
+        Args: p1
+        Returns: demand for good 1 and good 2 for agent A
+
         """
-        p2 = 1 #p2 is numeraire
+        # a. set numeraire
+        p2 = 1 
+
+        # b. set parameters
         par = self.par
+
+        # c. calculate demand for good 1 and good 2
         x1A = par.alpha*(par.w1A*p1+par.w2A*p2)/p1
         x2A = (1-par.alpha)*(par.w1A*p1+par.w2A*p2)/p2
         return x1A, x2A
 
     def demand_B(self,p1):
         """
-        Returns the demand of agent B. Takes the prices of good 1 and good 2 respectively as arguments.
+        Args: p1
+        Returns: demand for good 1 and good 2 for agent B
+
         """
-        p2 = 1 #p2 is numeraire
+        # a. set numeraire
+        p2 = 1 
+
+        # b. set parameters
         par = self.par
+
+        # c. calculate demand for good 1 and good 2
         x1B = par.beta*(par.w1B*p1+par.w2B*p2)/p1
         x2B = (1-par.beta)*(par.w1B*p1+par.w2B*p2)/p2
         return x1B, x2B
 
     def check_market_clearing(self,p1):
         """
-        Calculates the market error on the market for good 1 and good 2. Takes p1 as argument.
-        """
+        Args: p1
+        Returns: excess demand for good 1 and good 2
 
+        """
+        # a. set parameters
         par = self.par
 
+        # b. calculate demand for good 1 and good 2 for agent A and B
         x1A,x2A = self.demand_A(p1)
         x1B,x2B = self.demand_B(p1)
 
+        # c. calculate excess demand for good 1 and good 2
         eps1 = x1A-par.w1A + x1B-(1-par.w1A)
         eps2 = x2A-par.w2A + x2B-(1-par.w2A)
 
@@ -68,9 +88,14 @@ class ExchangeEconomyClass:
 
     def walras(self, p1, eps=1e-8, maxiter=500):
         """
-        Returns the market clearing price based on the lowest market error. takes p1 as argument.
+        Args: p1, eps, maxiter
+        Returns: p1
+
         """
+        # a. set t to 0
         t = 0
+        # b. initiate a while loop that breaks when
+        # the excess demand for good 1 is smaller than epsilon or t is higher than maxiter
         while True:
 
             # i. excess demand
@@ -99,6 +124,9 @@ class ExchangeEconomyClass:
 
     def solve(self):
         """
+        Args: 
+        Returns: solution for x1A, x2A and u_A
+
         """
         # Prepare for solution
         self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
@@ -119,7 +147,12 @@ class ExchangeEconomyClass:
         self.sol.x2 = result.x[1]
         self.sol.u = self.utility_A(self.sol.x1, self.sol.x2)
         
-    def solve2(self):
+    def solve_socialplanner(self):
+        """
+        Args: 
+        Returns: solution for x1A, x2A and u_A
+
+        """
         # Prepare for solution
         self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
         par = self.par 
@@ -140,8 +173,9 @@ class ExchangeEconomyClass:
     
     def market_clearing_p(self, P1):
         """
-        finds the market clearing price based on the lowest market error.
-        Takes a price vector P1 as input.
+        Args: P1
+        Returns: market clearing price
+    
         """
         eps1,eps2 = self.check_market_clearing(P1)
 
@@ -158,6 +192,53 @@ class ExchangeEconomyClass:
         market_price = P1[vec][0]
 
         return market_price
+    
+    def draw_pairs(self):
+        """
+        Args:
+        Returns: 50 pairs of endowments
+        """
+        np.random.seed(2000)
+        # Generate 50 pairs of endowments
+        W_pairs = []
+        for _ in range(50):
+            pair = (np.random.uniform(0, 1), np.random.uniform(0, 1))
+            W_pairs.append(pair)
+        return W_pairs
+    
+    def equilibrium(self):
+        """
+        Args: p1, eps, maxiter
+        Returns: equilibrium price and allocation if in set C
+        """
+        # a. use draw_pairs to get 50 pairs of endowments
+        W_pairs = self.draw_pairs()
+        # b. initiate empty list for equilibrium prices
+        equilibrium_prices = []
+        # c. initiate empty list for equilibrium allocations
+        equilibrium_allocations = []
+        # d. initiate empty list for equilibrium utilities
+        equilibrium_utilities = []
+        # e. loop through pairs of endowments
+        for W in W_pairs:
+            # i. set endowments
+            self.par.w1A = W[0]
+            self.par.w2A = W[1]
+            self.par.w1B = 1 - W[0]
+            self.par.w2B = 1 - W[1]
+            # ii. find equilibrium price using inital guess of 2.5
+            p1 = self.walras(2.5, eps=1e-8, maxiter=500)
+            # iii. find equilibrium allocation for A
+            self.solve()
+            # iv. append equilibrium price to equilibrium_prices
+            equilibrium_prices.append(p1)
+            # v. append equilibrium allocation to equilibrium_allocations
+            equilibrium_allocations.append((self.sol.x1, self.sol.x2))
+            # vi. append equilibrium utility to equilibrium_utilities
+            equilibrium_utilities.append(self.sol.u)
+        
+    
+
 
  
     
