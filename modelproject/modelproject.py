@@ -64,6 +64,7 @@ class Solowclass:
         sim.y = np.empty(T)
         sim.a = np.empty(T)
         sim.l = np.empty(T)
+        sim.z = np.empty(T)
 
         # Initial values
         sim.k[0] = k0
@@ -82,13 +83,13 @@ class Solowclass:
 
         # Plots
         fig, ax = plt.subplots(2, 2, figsize=(10, 8))
-        ax[0,1].plot(sim.k, label='Capital, $K_t$')
+        ax[0,1].plot(sim.k)
         ax[0,1].set_title('Capital, $K_t$')
         ax[0,1].legend()
-        ax[1,0].plot(sim.y, label='Production, $Y_t$', color='orange')
+        ax[1,0].plot(sim.y)
         ax[1,0].set_title('Production, $Y_t$')
         ax[1,0].legend()
-        ax[0,0].plot(sim.z, label="Capital-output ration, $z_t$")
+        ax[0,0].plot(sim.z)
         ax[0,0].set_title("Capital-output ration, $z_t$")
         ax[0,0].legend()        
         ax[1,1].plot(sim.a, label="Technology, $A_t$")
@@ -115,6 +116,7 @@ class Solowclass:
         sim.d = np.empty(T)
         sim.r = np.empty(T)
         sim.l = np.empty(T)
+        sim.z = np.empty(T)
 
         # Initial values
         sim.k[0] = k0
@@ -138,7 +140,7 @@ class Solowclass:
             sim.z[t] = sim.k[t]/sim.y[t]
 
         # plots
-        fig, ax = plt.subplots(2, 2, figsize=(10, 8))
+        fig, ax = plt.subplots(2, 3, figsize=(10, 8))
         ax[1,0].plot(sim.y)
         ax[1,0].set_title('Production, $Y_t$')
         ax[0,0].plot(sim.z)
@@ -148,6 +150,13 @@ class Solowclass:
         ax[0,1].set_title('Remaining part of the exhaustible resource, $R_t$')
         ax[1,1].plot(sim.d)
         ax[1,1].set_title('Damage to the production, $D_t$')
+        ax[1,2].plot(sim.a, label="Technology, $A_t$")
+        ax[1,2].plot(sim.l, label="Labor, $L_t$")
+        ax[1,2].set_title("Technology and labor")
+        ax[1,2].legend() 
+        ax[0,2].plot(sim.k)
+        ax[0,2].set_title('Capital, $K_t$')
+        ax[0,2].legend()   
         fig.tight_layout()
 
         return sim
@@ -168,6 +177,5 @@ class Solowclass:
 
         # simulate
         simulation = self.simulate_extended(T=100,k0=1,l0=1,a0=1,r0=1);
-
         return None
 
