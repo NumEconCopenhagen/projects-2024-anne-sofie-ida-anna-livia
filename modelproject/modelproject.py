@@ -53,8 +53,54 @@ class Solowclass:
 
         print('The steady state for k in the standard Solow model is',result.root)   
         
-    
-    def simulate(self,T,k0,l0,a0,r0):
+    def simulate(self, T, k0, l0, a0):
+        """ Simulates the baseline Solow model """
+
+        par = self.par
+        sim = self.sim
+
+        # Initialize arrays
+        sim.k = np.empty(T)
+        sim.y = np.empty(T)
+        sim.a = np.empty(T)
+        sim.l = np.empty(T)
+
+        # Initial values
+        sim.k[0] = k0
+        sim.l[0] = l0
+        sim.a[0] = a0
+        sim.y[0] = sim.k[0]**par.alpha * (sim.a[0] * sim.l[0])**(1 - par.alpha)
+        sim.z[0]=sim.k[0]/sim.y[0]
+
+        # Simulate
+        for t in range(1, T):
+            sim.l[t] = (1 + par.n) * sim.l[t-1]
+            sim.a[t] = (1 + par.g) * sim.a[t-1]
+            sim.k[t] = (1 - par.delta) * sim.k[t-1] + par.s * sim.y[t-1]
+            sim.y[t] = sim.k[t]**par.alpha * (sim.a[t] * sim.l[t])**(1 - par.alpha)
+            sim.z[t]=sim.k[t]/sim.y[t]
+
+        # Plots
+        fig, ax = plt.subplots(2, 2, figsize=(10, 8))
+        ax[0,1].plot(sim.k, label='Capital, $K_t$')
+        ax[0,1].set_title('Capital, $K_t$')
+        ax[0,1].legend()
+        ax[1,0].plot(sim.y, label='Production, $Y_t$', color='orange')
+        ax[1,0].set_title('Production, $Y_t$')
+        ax[1,0].legend()
+        ax[0,0].plot(sim.z, label="Capital-output ration, $z_t$")
+        ax[0,0].set_title("Capital-output ration, $z_t$")
+        ax[0,0].legend()        
+        ax[1,1].plot(sim.a, label="Technology, $A_t$")
+        ax[1,1].plot(sim.l, label="Labor, $L_t$")
+        ax[1,1].set_title("Technology and labor")
+        ax[1,1].legend()     
+        fig.tight_layout()
+
+        return sim
+
+
+    def simulate_extended(self,T,k0,l0,a0,r0):
         """ Simulates the extended Solow model """
 
         par=self.par
@@ -92,7 +138,7 @@ class Solowclass:
             sim.z[t] = sim.k[t]/sim.y[t]
 
         # plots
-        fig, ax = plt.subplots(2 , 2)
+        fig, ax = plt.subplots(2, 2, figsize=(10, 8))
         ax[1,0].plot(sim.y)
         ax[1,0].set_title('Production, $Y_t$')
         ax[0,0].plot(sim.z)
@@ -107,7 +153,7 @@ class Solowclass:
         return sim
 
     # define simulation with widget for parameters
-    def simulation_widget(self,alpha=0.2,beta=0.6,phi=0.5):
+    def simulation_widget_extended(self,alpha=0.2,beta=0.6,phi=0.5):
         """ Creating widgets for the interactive plot """
         par = self.par
 
@@ -121,7 +167,7 @@ class Solowclass:
             raise ValueError('alpha + beta must be less than 1')
 
         # simulate
-        simulation = self.simulate(T=100,k0=1,l0=1,a0=1,r0=1);
+        simulation = self.simulate_extended(T=100,k0=1,l0=1,a0=1,r0=1);
 
         return None
 
