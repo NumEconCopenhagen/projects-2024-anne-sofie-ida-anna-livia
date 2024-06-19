@@ -285,47 +285,52 @@ class ExchangeEconomyClass:
 
         """
         # a. use equilibrium to get equilibrium allocations
-        x_list, y_list = self.equilibrium()
-        # b. initiate figure
-        # a. total endowment
-        w1bar = 1.0
-        w2bar = 1.0
+        with contextlib.redirect_stdout(open(os.devnull, 'w')):
+            x_list, y_list = self.equilibrium()
+            # b. initiate figure
+            # a. total endowment
+            w1bar = 1.0
+            w2bar = 1.0
 
-        # b. figure set up
-        fig = plt.figure(frameon=False,figsize=(6,6), dpi=100)
-        ax_A = fig.add_subplot(1, 1, 1)
+            # b. figure set up
+            fig = plt.figure(frameon=False,figsize=(6,6), dpi=100)
+            ax_A = fig.add_subplot(1, 1, 1)
 
-        ax_A.set_xlabel("$x_1^A$",color="white")
-        ax_A.set_ylabel("$x_2^A$", color="white")
+            ax_A.set_xlabel("$x_1^A$",color="white")
+            ax_A.set_ylabel("$x_2^A$", color="white")
 
-        temp = ax_A.twinx()
-        temp.set_ylabel("$x_2^B$", color="white")
-        ax_B = temp.twiny()
-        ax_B.set_xlabel("$x_1^B$", color="white")
+            temp = ax_A.twinx()
+            temp.set_ylabel("$x_2^B$", color="white")
+            ax_B = temp.twiny()
+            ax_B.set_xlabel("$x_1^B$", color="white")
 
-        ax_A.tick_params(axis='x', colors='white')
-        ax_A.tick_params(axis='y', colors='white')
-        ax_B.tick_params(axis='x', colors='white')
-        temp.tick_params(axis='y', colors='white')
+            ax_A.tick_params(axis='x', colors='white')
+            ax_A.tick_params(axis='y', colors='white')
+            ax_B.tick_params(axis='x', colors='white')
+            temp.tick_params(axis='y', colors='white')
 
-        # limits
-        ax_B.plot([0,w1bar],[0,0],lw=2,color='black')
-        ax_B.plot([0,w1bar],[w2bar,w2bar],lw=2,color='black')
-        ax_B.plot([0,0],[0,w2bar],lw=2,color='black')
-        ax_B.plot([w1bar,w1bar],[0,w2bar],lw=2,color='black')
+            # limits
+            ax_B.plot([0,w1bar],[0,0],lw=2,color='black')
+            ax_B.plot([0,w1bar],[w2bar,w2bar],lw=2,color='black')
+            ax_B.plot([0,0],[0,w2bar],lw=2,color='black')
+            ax_B.plot([w1bar,w1bar],[0,w2bar],lw=2,color='black')
 
-        ax_A.set_xlim([-0.1, w1bar + 0.1])
-        ax_A.set_ylim([-0.1, w2bar + 0.1])    
-        ax_B.set_xlim([w1bar + 0.1, -0.1])
-        ax_B.set_ylim([w2bar + 0.1, -0.1])
+            ax_A.set_xlim([-0.1, w1bar + 0.1])
+            ax_A.set_ylim([-0.1, w2bar + 0.1])    
+            ax_B.set_xlim([w1bar + 0.1, -0.1])
+            ax_B.set_ylim([w2bar + 0.1, -0.1])
+            
+            # d. scatter plot of equilibrium allocations
+            ax_A.scatter(x_list, y_list, label='Equilibrium allocations')
         
-        # d. scatter plot of equilibrium allocations
-        ax_A.scatter(x_list, y_list, label='Equilibrium allocations')
-       
-        # f. show plot
-        plt.show()
+            # f. show plot
+            plt.show()
 
     def plot_walras(self):
+        """
+        args:
+        returns: plot of convergence to equilibrium
+        """
         # Make plot of convergence to equilibrium
         # a. create empty list to store the errors
         N = 75
@@ -362,6 +367,10 @@ class ExchangeEconomyClass:
         plt.show()
 
     def plot_pareto(self):
+        """
+        args:
+        returns: plot of the Edgeworth box with the pareto optimal points
+        """
         utility_init_A = self.utility_A(self.par.w1A, self.par.w2A) #calling utility function in py-file
         print(f"The utility of the bundle (x1A = {self.par.w1A}, x2A = {self.par.w2A}) is: {utility_init_A:.3f}")
 
