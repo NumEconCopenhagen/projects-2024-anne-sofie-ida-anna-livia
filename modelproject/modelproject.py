@@ -19,7 +19,7 @@ class Solowclass:
 
         par=self.par
 
-        # ISN: JEG HAR INDSAT VÆRDIERNE FRA EKSAMENSSÆTTET
+        
         # Baseline Solow model
         par.alpha=0.2
         par.s=0.3
@@ -33,9 +33,8 @@ class Solowclass:
         par.sE=0.005
         par.phi=0.5
 
-    # ISN: KOPIERET ASH'S LØSNINGER MEN INDSAT PARAMETERVÆRDIER 
-
     def solve_ss_z_par(self, zss):
+        """ Solves for steady state value of z in the extended Solow model """
 
         par=self.par
 
@@ -45,6 +44,7 @@ class Solowclass:
         print('The steady state for z in the Solow model with an exhaustable resource and climate change is',result.root)
 
     def solve_ss_k_par(self, kss):
+        """ Solves for the steady state value of k in the standard Solow model """
         par=self.par
 
         f = lambda k: k**par.alpha
@@ -55,6 +55,7 @@ class Solowclass:
         
     
     def simulate(self,T,k0,l0,a0,r0):
+        """ Simulate the extended Solow model """
         
         par=self.par
         sim=self.sim
@@ -101,6 +102,7 @@ class Solowclass:
 
     # define simulation with widget for parameters
     def simulation_widget(self,alpha=0.2,beta=0.6,phi=0.5):
+        """ Creating widgets for the interactive plot """
         par = self.par
 
         par.alpha= alpha
@@ -113,7 +115,7 @@ class Solowclass:
             raise ValueError('alpha + beta must be less than 1')
 
         # simulate
-        simulation = self.simulate(T=100,k0=1,l0=1,a0=1,r0=1)
+        simulation = self.simulate(T=100,k0=1,l0=1,a0=1,r0=1);
 
         return simulation
 
