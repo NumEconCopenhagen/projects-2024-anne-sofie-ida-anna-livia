@@ -34,7 +34,6 @@ class Solowclass:
         par.sE=0.005
         par.phi=0.5
 
-
     def solve_ss_z_par(self, zss):
         """ Solves for steady state value of z in the extended Solow model  """
         par=self.par
@@ -92,12 +91,18 @@ class Solowclass:
             sim.y[t] = (1-sim.d[t])*sim.k[t]**par.alpha*(sim.a[t]*sim.l[t])**par.beta*sim.e[t]**(1-par.alpha-par.beta)
             sim.z[t] = sim.k[t]/sim.y[t]
 
-        # plot
-        fig = plt.figure()
-        plt.plot(sim.z, label='z')
-        plt.axhline(y=4.09, color='b', linestyle='--')
-        plt.legend()
-        plt.show()
+        # plots
+        fig, ax = plt.subplots(2 , 2)
+        ax[1,0].plot(sim.y)
+        ax[1,0].set_title('Production, $Y_t$')
+        ax[0,0].plot(sim.z)
+        ax[0,0].set_title('Capital-output ratio, $z_t$')
+        ax[0,0].axhline(y=4.09, color='b', linestyle='--')
+        ax[0,1].plot(sim.r)
+        ax[0,1].set_title('Remaining part of the exhaustible resource, $R_t$')
+        ax[1,1].plot(sim.d)
+        ax[1,1].set_title('Damage to the production, $D_t$')
+        fig.tight_layout()
 
         return sim
 
