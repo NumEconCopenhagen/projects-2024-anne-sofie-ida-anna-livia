@@ -41,7 +41,7 @@ class Solowclass:
         obj_zss = lambda zss: zss-(1/(1-par.sE))**(par.eps+par.phi)*(1/((1+par.n)*(1+par.g)))**par.beta*(par.s+(1-par.delta)*zss)**(1-par.alpha)*zss**par.alpha
         result = optimize.root_scalar(obj_zss,bracket=[0.1,100],method='brentq')
 
-        print('The steady state for z in the Solow model with an exhaustable resource and climate change is',result.root)
+        print(f'The steady state for z in the Solow model with an exhaustable resource and climate change is {result.root:.3f}')
 
     def solve_ss_k_par(self, kss):
         """ Solves for steady state value of k in the standard Solow model """
@@ -51,7 +51,7 @@ class Solowclass:
         obj_kss = lambda kss: kss - (par.s*f(kss) + (1-par.delta)*kss)/((1+par.g)*(1+par.n))
         result = optimize.root_scalar(obj_kss,bracket=[0.1,100],method='brentq')
 
-        print('The steady state for k in the standard Solow model is',result.root)   
+        print(f'The steady state for k in the baseline Solow model is {result.root:.3f}')   
         
     def simulate(self, T, k0, l0, a0):
         """ Simulates the baseline Solow model """
@@ -85,19 +85,15 @@ class Solowclass:
         fig, ax = plt.subplots(2, 2, figsize=(10, 8))
         ax[0,1].plot(sim.k)
         ax[0,1].set_title('Capital, $K_t$')
-        ax[0,1].legend()
-
         ax[1,0].plot(sim.y)
         ax[1,0].set_title('Production, $Y_t$')
-        ax[1,0].legend()
         ax[0,0].plot(sim.z)
-        ax[0,0].set_title("Capital-output ration, $z_t$")
-        ax[0,0].legend()        
+        ax[0,0].set_title("Capital-output ratio, $z_t$")
         ax[0,0].axhline(y=3.45, color='b', linestyle='--')
         ax[1,1].plot(sim.a, label="Technology, $A_t$")
         ax[1,1].plot(sim.l, label="Labor, $L_t$")
+        ax[1,1].legend()
         ax[1,1].set_title("Technology and labor")
-        ax[1,1].legend()     
         fig.tight_layout()
 
         return sim
@@ -155,10 +151,9 @@ class Solowclass:
         ax[1,2].plot(sim.a, label="Technology, $A_t$")
         ax[1,2].plot(sim.l, label="Labor, $L_t$")
         ax[1,2].set_title("Technology and labor")
-        ax[1,2].legend() 
+        ax[1,2].legend()
         ax[0,2].plot(sim.k)
         ax[0,2].set_title('Capital, $K_t$')
-        ax[0,2].legend()   
         fig.tight_layout()
 
         return sim
