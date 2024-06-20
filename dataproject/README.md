@@ -8,11 +8,9 @@ We apply the **following datasets**:
 
 1. HISB3
 2. NAN1
-3. HFU1
-4. HFUDD10
-5. HFUDD11
+3. HFUDD11
 
-The datasets are all fetched from Statistikbanken (Statistics Denmark) using an API. In the py-file functions are defined which define the fetching, the parameters and the storage of each of the datasets, we work with. 
+The datasets are all fetched from Statistikbanken (Statistics Denmark) using an API. In the py-file functions are defined which define the fetching, the parameters and the storage of each of the datasets, we work with as well as cleaning the datasets. 
 
 **Dependencies:** Apart from a standard Anaconda Python 3 installation, the project requires the following installations:
 
