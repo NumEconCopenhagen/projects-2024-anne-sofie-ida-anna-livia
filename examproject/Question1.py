@@ -8,7 +8,8 @@ import os
 # For the 3D plot 
 from mpl_toolkits.mplot3d import Axes3D
 
- 
+from scipy.optimize import minimize
+
 class ProductionEconomyClass:
 
     def __init__(self):
@@ -113,25 +114,6 @@ class ProductionEconomyClass:
 
         return excess_1, excess_2, excess_labor 
     
-    def check_market_clearing_B(self, p1, p2): 
-        """
-        Returns excess demand of good 1 and 2 for given prices 
-        Args: p1, p2
-        Returns: Excess demand
-        """
-        par= self.par
-
-        labor_demand1, production1, profit1=self.optimal_firm(p1)
-        labor_demand2, production2, profit2=self.optimal_firm(p2)
-
-        c1, c2 = self.optimal_consumption(p1,p2)
-
-        excess_1=c1-production1
-        excess_2=c2-production2
-
-        return excess_1, excess_2
-
-    
     def plot_excess_demand(self, N=10):
         """
         Plots excess demand of good 1 and 2 for given prices 
@@ -215,11 +197,60 @@ class ProductionEconomyClass:
 
         return p1, p2
     
-    def utility(self, p1, p2): 
-        c1, c2=self.optimal_consumer(p1,p2)
+    def social_welfare(self): 
+
+        self.sol = SimpleNamespace()
+
+        par= self.par
+
         l1, y1, profit1=self.optimal_firm(p1)
         l2, y2, profit2=self.optimal_firm(p2)
-        l=l1+l2
 
+        def obj(tax, p1, p2):
+            l=self.labor_supply(p1, p2)
+            c2 = (1 - par.alpha) * (par.w * l + tax*y2 + profit1 + profit2) / (p2 + tax)
+            c1 = par.alpha * (par.w * l + tax*y2 + profit1 + profit2) / p1
+            return -(np.log(c1**par.alpha*c2**(1-par.alpha))-par.nu*(l**(1+par.epsilon))/(1+par.epsilon)-par.kappa*y2)
 
-        U=log(c1**par.alpha*c2**(1-par.alpha))-(par.nu*l**(1+par.epsilon))/(1+par.epsilon)
+        # Define bounds and initial guess
+        bounds = [(1e-8, 1)]
+        x0 = [0.15]
+
+        # Optimize using scipy
+        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds)
+
+        # Extract solution
+        self.sol.tax = result.x[0] if result.success else None
+
+        return self.sol.tax
+    
+    def social_welfare_GPT(self, x):
+        tau, p1, p2 = x
+    
+        par = self.par
+        par.tau = tau
+        par.T = tau * self.optimal_consumption(p1, p2)[1]  
+
+        c1, c2 = self.optimal_consumption(p1, p2)
+        l = self.labor_supply(p1, p2)
+        y2 = self.optimal_firm(p2)[1]
+
+        utility = np.log(c1**par.alpha * c2**(1 - par.alpha)) - par.nu * (l**(1 + par.epsilon) / (1 + par.epsilon))
+        swf = utility - par.kappa * y2
+        return -swf  # Negate because we use a minimizer to maximize
+
+    def find_optimal_tax_and_prices_GPT(self):
+        # Initial guess for tau, p1, and p2
+        x0 = [0.1, 0.97596817, 1.49081600]
+        # Bounds for tau, p1, and p2
+        bounds = [(0, 1), (0.1, 2), (0.1, 2)]
+
+        # Optimize using scipy
+        result = minimize(self.social_welfare_GPT, x0, method='SLSQP', bounds=bounds)
+
+        if result.success:
+            optimal_tau, optimal_p1, optimal_p2 = result.x
+        else:
+            optimal_tau, optimal_p1, optimal_p2 = None, None, None
+
+        return optimal_tau, optimal_p1, optimal_p2
