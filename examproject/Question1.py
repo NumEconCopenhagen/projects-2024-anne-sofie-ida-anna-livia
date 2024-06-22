@@ -143,15 +143,16 @@ class ProductionEconomyClass:
 
         excess_1 = np.zeros_like(P1)
         excess_2 = np.zeros_like(P2)
+        excess_l = np.zeros_like(P1)
 
         for i in range(N):
             for j in range(N):
-                excess_1[i, j], excess_2[i, j] = self.check_market_clearing_B(P1[i, j], P2[i, j])
+                excess_1[i, j], excess_2[i, j], excess_l[i,j] = self.check_market_clearing_A(P1[i, j], P2[i, j])
 
         fig = plt.figure(figsize=(14, 6))
 
         # 3D plot for excess production of good 1
-        ax1 = fig.add_subplot(121, projection='3d')
+        ax1 = fig.add_subplot(131, projection='3d')
         ax1.plot_surface(P1, P2, excess_1, cmap='viridis')
         ax1.set_title('Excess demand of Good 1')
         ax1.set_xlabel('Price of Good 1 (p1)')
@@ -160,13 +161,22 @@ class ProductionEconomyClass:
         ax1.view_init(elev=30, azim=45)
 
         # 3D plot for excess production of good 2
-        ax2 = fig.add_subplot(122, projection='3d')
+        ax2 = fig.add_subplot(132, projection='3d')
         ax2.plot_surface(P1, P2, excess_2, cmap='viridis')
         ax2.set_title('Excess demand of Good 2')
         ax2.set_xlabel('Price of Good 1 (p1)')
         ax2.set_ylabel('Price of Good 2 (p2)')
         ax2.set_zlabel('Excess demand 2')
         ax2.view_init(elev=30, azim=45)
+
+        # 3D plot for excess production of good 1
+        ax1 = fig.add_subplot(133, projection='3d')
+        ax1.plot_surface(P1, P2, excess_l, cmap='viridis')
+        ax1.set_title('Excess demand for labor')
+        ax1.set_xlabel('Price of Good 1 (p1)')
+        ax1.set_ylabel('Price of Good 2 (p2)')
+        ax1.set_zlabel('Excess demand for labor')
+        ax1.view_init(elev=30, azim=45) 
 
         plt.tight_layout()
         plt.show()
