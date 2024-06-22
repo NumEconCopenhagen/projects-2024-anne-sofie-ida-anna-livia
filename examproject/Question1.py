@@ -8,7 +8,7 @@ import os
 # For the 3D plot 
 from mpl_toolkits.mplot3d import Axes3D
 
-
+ 
 class ProductionEconomyClass:
 
     def __init__(self):
@@ -49,27 +49,11 @@ class ProductionEconomyClass:
         profit=((1-par.gamma)/par.gamma)*par.w*((p*par.A*par.gamma)/par.w)**(1/(1-par.gamma))
         return labor_demand, production, profit
 
-    def optimal_consumer(self,p1,p2):
-        """
-        Optimal behavior of consumer for given prices. 
-        Args: p1, p2, w, alpha, T, l, profit_1, profit_2, tau
-        """
-        par= self.par
-
-        labor_1, y_1, profit_1=self.optimal_firm(p=p1)
-        labor_2, y_2, profit_2=self.optimal_firm(p=p2)
-        l=labor_1+labor_2
-
-        c1=par.alpha*(par.w*l+par.T+profit_1+profit_2)/p1
-        c2=(1-par.alpha)*(par.w*l+par.T+profit_1+profit_2)/(p2+par.tau)
-
-        return c1, c2
-
     def labor_supply(self, p1, p2):
         par = self.par
 
         # Prepare for solution
-        self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
+        self.sol = SimpleNamespace()
 
         labor_demand_1, production_1, profit_1 = self.optimal_firm(p1)
         labor_demand_2, production_2, profit_2 = self.optimal_firm(p2)
@@ -78,7 +62,7 @@ class ProductionEconomyClass:
         def obj(l):
             c1 = par.alpha * (par.w * l + par.T + profit_1 + profit_2) / p1
             c2 = (1 - par.alpha) * (par.w * l + par.T + profit_1 + profit_2) / (p2 + par.tau)
-            return -(np.log(c1 * par.alpha * c2 * (1 - par.alpha)) - par.nu * (l ** (1 + par.epsilon) / (1 + par.epsilon)))
+            return -(np.log(c1 ** par.alpha * c2 ** (1 - par.alpha)) - par.nu * (l ** (1 + par.epsilon) / (1 + par.epsilon)))
 
         # Define bounds and initial guess
         bounds = [(1e-8, 1)]
@@ -92,7 +76,22 @@ class ProductionEconomyClass:
 
         return self.sol.l
 
+    def optimal_consumption(self,p1,p2):
+        """
+        Optimal behavior of consumer for given prices. 
+        Args: p1, p2, w, alpha, T, l, profit_1, profit_2, tau
+        """
+        par= self.par
 
+        labor_1, y_1, profit_1=self.optimal_firm(p=p1)
+        labor_2, y_2, profit_2=self.optimal_firm(p=p2)
+        l=self.labor_supply(p1,p2)
+
+        c1=par.alpha*(par.w*l+par.T+profit_1+profit_2)/p1
+        c2=(1-par.alpha)*(par.w*l+par.T+profit_1+profit_2)/(p2+par.tau)
+
+        return c1, c2
+    
     def check_market_clearing_A(self, p1, p2): 
         """
         Returns excess demand of good 1 and 2 for given prices 
@@ -106,7 +105,7 @@ class ProductionEconomyClass:
         total_labor_demand=labor_demand1+labor_demand2
         labor_supply=self.labor_supply(p1,p2)
 
-        c1, c2 = self.optimal_consumer(p1,p2)
+        c1, c2 = self.optimal_consumption(p1,p2)
 
         excess_1=c1-production1
         excess_2=c2-production2
@@ -125,7 +124,7 @@ class ProductionEconomyClass:
         labor_demand1, production1, profit1=self.optimal_firm(p1)
         labor_demand2, production2, profit2=self.optimal_firm(p2)
 
-        c1, c2 = self.optimal_consumer(p1,p2)
+        c1, c2 = self.optimal_consumption(p1,p2)
 
         excess_1=c1-production1
         excess_2=c2-production2
@@ -147,7 +146,7 @@ class ProductionEconomyClass:
 
         for i in range(N):
             for j in range(N):
-                excess_1[i, j], excess_2[i, j] = self.check_market_clearing(P1[i, j], P2[i, j])
+                excess_1[i, j], excess_2[i, j] = self.check_market_clearing_B(P1[i, j], P2[i, j])
 
         fig = plt.figure(figsize=(14, 6))
 
@@ -183,7 +182,7 @@ class ProductionEconomyClass:
         # b. initiate a while loop that breaks when the excess demand for good 1 is smaller than epsilon or t is higher than maxiter
         while True:
             # i. excess demand
-            excess1, excess2 = self.check_market_clearing(p1, p2)
+            excess1, excess2, excess_l = self.check_market_clearing_A(p1, p2)
 
             # ii: ensures that the break conditions hold, i.e. that the excess demand for good 1 is not smaller then epsilon
             # and that the number of iterations (t) isn't higher than 500 
