@@ -65,7 +65,7 @@ class ProductionEconomyClass:
 
         return c1, c2
 
-        def labor_supply(self, p1, p2):
+    def labor_supply(self, p1, p2):
         par = self.par
 
         # Prepare for solution
