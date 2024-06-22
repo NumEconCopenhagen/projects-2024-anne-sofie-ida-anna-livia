@@ -63,9 +63,58 @@ class ProductionEconomyClass:
         c1=par.alpha*(par.w*l+par.T+profit_1+profit_2)/p1
         c2=(1-par.alpha)*(par.w*l+par.T+profit_1+profit_2)/(p2+par.tau)
 
-        return c1, c2 
+        return c1, c2
+
+        def labor_supply(self, p1, p2):
+        par = self.par
+
+        # Prepare for solution
+        self.sol = SimpleNamespace(x1=np.nan, x2=np.nan, u=np.nan)
+
+        labor_demand_1, production_1, profit_1 = self.optimal_firm(p1)
+        labor_demand_2, production_2, profit_2 = self.optimal_firm(p2)
+
+        # Define objective function
+        def obj(l):
+            c1 = par.alpha * (par.w * l + par.T + profit_1 + profit_2) / p1
+            c2 = (1 - par.alpha) * (par.w * l + par.T + profit_1 + profit_2) / (p2 + par.tau)
+            return -(np.log(c1 * par.alpha * c2 * (1 - par.alpha)) - par.nu * (l ** (1 + par.epsilon) / (1 + par.epsilon)))
+
+        # Define bounds and initial guess
+        bounds = [(1e-8, 1)]
+        x0 = [0.1]
+
+        # Optimize using scipy
+        result = optimize.minimize(obj, x0, method='SLSQP', bounds=bounds)
+
+        # Extract solution
+        self.sol.l = result.x[0] if result.success else None
+
+        return self.sol.l
+
+
+    def check_market_clearing_A(self, p1, p2): 
+        """
+        Returns excess demand of good 1 and 2 for given prices 
+        Args: p1, p2
+        Returns: Excess demand
+        """
+        par= self.par
+
+        labor_demand1, production1, profit1=self.optimal_firm(p1)
+        labor_demand2, production2, profit2=self.optimal_firm(p2)
+        total_labor_demand=labor_demand1+labor_demand2
+        labor_supply=self.labor_supply(p1,p2)
+
+        c1, c2 = self.optimal_consumer(p1,p2)
+
+        excess_1=c1-production1
+        excess_2=c2-production2
+        excess_labor=total_labor_demand-labor_supply
+
+        return excess_1, excess_2, excess_labor 
     
-    def check_market_clearing(self, p1, p2): 
+    def check_market_clearing_B(self, p1, p2): 
         """
         Returns excess demand of good 1 and 2 for given prices 
         Args: p1, p2
