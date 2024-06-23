@@ -3,7 +3,7 @@ from scipy.optimize import minimize
 from matplotlib import pyplot as plt
 
 class BuildingBlockII:
-    def __init__(self, X, y, f):
+    def __init__(self, Y):
         """
         Initializes class with points X and y
         """
