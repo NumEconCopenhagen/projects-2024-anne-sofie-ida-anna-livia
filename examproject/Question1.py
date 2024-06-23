@@ -226,13 +226,21 @@ class ProductionEconomyClass:
     
     def social_welfare_GPT(self, x):
         tau, p1, p2 = x
-    
+
         par = self.par
         par.tau = tau
-        par.T = tau * self.optimal_consumption(p1, p2)[1]  
 
-        c1, c2 = self.optimal_consumption(p1, p2)
+        # Calculate labor supply, profits, and consumption with the given tau
         l = self.labor_supply(p1, p2)
+        profit_1 = self.optimal_firm(p1)[2]
+        profit_2 = self.optimal_firm(p2)[2]
+        income = par.w * l + par.T + profit_1 + profit_2
+        c1 = par.alpha * income / p1
+        c2 = (1 - par.alpha) * income / (p2 + tau)
+
+        # Update the transfer T based on the new c2
+        par.T = tau * c2
+
         y2 = self.optimal_firm(p2)[1]
 
         utility = np.log(c1**par.alpha * c2**(1 - par.alpha)) - par.nu * (l**(1 + par.epsilon) / (1 + par.epsilon))
@@ -241,7 +249,7 @@ class ProductionEconomyClass:
 
     def find_optimal_tax_and_prices_GPT(self):
         # Initial guess for tau, p1, and p2
-        x0 = [0.1, 0.97596817, 1.49081600]
+        x0 = [0.1, 1.0, 1.0]
         # Bounds for tau, p1, and p2
         bounds = [(0, 1), (0.1, 2), (0.1, 2)]
 
@@ -250,7 +258,8 @@ class ProductionEconomyClass:
 
         if result.success:
             optimal_tau, optimal_p1, optimal_p2 = result.x
+            optimal_T = optimal_tau * self.optimal_consumption(optimal_p1, optimal_p2)[1]
         else:
-            optimal_tau, optimal_p1, optimal_p2 = None, None, None
+            optimal_tau, optimal_p1, optimal_p2, optimal_T = None, None, None, None
 
-        return optimal_tau, optimal_p1, optimal_p2
+        return optimal_tau, optimal_p1, optimal_p2, optimal_T
