@@ -24,6 +24,7 @@ class Graduate:
         self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
 
     def eps_sim(self, mu, sigma, shape):
+        par = self.par
         """
         Args:
         mu (float): mean of the normal distribution
@@ -37,6 +38,7 @@ class Graduate:
         return np.random.normal(mu, sigma, shape)
 
     def avg_exp_util(self):
+        
         """
         Args:
         None
@@ -45,6 +47,7 @@ class Graduate:
         np.array: average expected utility for each individual
         
         """
+        np.random.seed(2024)
         par = self.par
         u = par.v + (1/par.K) * np.sum(self.eps_sim(0, par.sigma, (par.J, par.K)), axis=1)
         return u
@@ -60,7 +63,8 @@ class Graduate:
 
         """
         par = self.par
-        epsilon = self.eps_sim(0, par.sigma, (par.J, par.N))
+        np.random.seed(2024)
+        epsilon = self.eps_sim(0, par.sigma, (par.J, par.K))
         u_realised = par.v[:, None] + epsilon
         avg_u_realised = np.mean(u_realised, axis=1)
         return avg_u_realised
@@ -203,7 +207,7 @@ class Graduate:
         new_actual_u = np.zeros((par.N, par.K))
         switch_share = np.zeros(par.N)
 
-        #  simulate
+        # simulate
         for k in range(par.K):
             # i. for each graduate
             for i in range(par.N):
@@ -214,8 +218,8 @@ class Graduate:
                         prior[j] = par.v[j]+ eps_individual[i, j, k]
                     # if career is not same, individual knows the expected utiliy based on friends - c
                     else:
-
                         prior[j] = initial_exp_u[i, k] - par.c
+                # choose career that maximizes expected utility
                 chosen_career = np.argmax(prior)
                 new_career[i, k] = chosen_career
                 new_exp_u[i, k] = prior[chosen_career]
