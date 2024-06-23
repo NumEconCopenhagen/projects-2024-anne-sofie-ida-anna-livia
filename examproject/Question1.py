@@ -126,7 +126,7 @@ class ProductionEconomyClass:
     
     def plot_excess_demand(self, N=10):
         """
-        Plots excess demand of good 1 and 2 for given prices (Here we have used ChatGPT to write a first draft of the code, which we have adjusted.) 
+        Plots excess demand of good 1 and 2 for given prices (Here we have used ChatGPT to write a first draft of the code, which we have then adjusted.) 
 
         Args: N (number of points in the price range) 
         Returns: Plot of excess demand for combinations of p1 and p2 
@@ -214,6 +214,7 @@ class ProductionEconomyClass:
     def social_welfare(self, x):
         """
         Define the social welfare function (SWF) utilizing previously defined functions.
+        (Here we have used ChatGPT to write a first draft of the code, which we have then adjusted.) 
 
         Args: tau, p1, p2, w, T, alpha, epsilon, nu, kappa. 
         Returns: social welfare function
