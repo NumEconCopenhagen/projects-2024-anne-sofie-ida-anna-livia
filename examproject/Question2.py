@@ -17,10 +17,8 @@ class Graduate:
         self.par.v = np.array([1, 2, 3])
         self.par.c = 1
 
-        # Create a matrix of friends in each career for each individual
+        # a. Create a matrix of friends in each career for each individual
         self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
-
-        # Create friends_in_career for each individual
         self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
 
     def eps_sim(self, mu, sigma, shape):
@@ -49,6 +47,7 @@ class Graduate:
         """
         np.random.seed(2024)
         par = self.par
+        # a. calculate expected utility
         u = par.v + (1/par.K) * np.sum(self.eps_sim(0, par.sigma, (par.J, par.K)), axis=1)
         return u
     
@@ -64,8 +63,11 @@ class Graduate:
         """
         par = self.par
         np.random.seed(2024)
+        # a. draw epsilons
         epsilon = self.eps_sim(0, par.sigma, (par.J, par.K))
+        # b. calculate realised utility
         u_realised = par.v[:, None] + epsilon
+        # c. calculate average realised utility
         avg_u_realised = np.mean(u_realised, axis=1)
         return avg_u_realised
 
@@ -84,8 +86,6 @@ class Graduate:
         par = self.par
         # Create a matrix of friends in each career for each individual
         self.F = np.tile(np.arange(1, par.N + 1).reshape(par.N, 1), (1, par.J))
-
-        # Create friends_in_career for each individual
         self.friends_in_career = [np.full(par.J, i + 1) for i in range(par.N)]
         
         # draw epsilons
@@ -141,6 +141,15 @@ class Graduate:
         return career_shares, avg_subjective_utilities, avg_realised_utilities
     
     def plot_share(self, career_shares):
+        """
+        
+        Args:
+        career_shares (np.array): career shares for each individual
+
+        Returns:
+        A plot of the career shares for each individual
+
+        """
         par = self.par
         fig, ax = plt.subplots()
         for j in range(par.J):
@@ -151,6 +160,15 @@ class Graduate:
         plt.show()
     
     def plot_exp_util(self, avg_subjective_utilities):
+        """
+        
+        Args:
+        avg_subjective_utilities (np.array): average subjective utility for each individual
+
+        Returns:
+        A plot of the average subjective utility for each individual
+
+        """
         par = self.par
         fig, ax = plt.subplots()
         ax.plot(np.arange(1, par.N + 1), avg_subjective_utilities, marker='o', label="Average Subjective Utility")
@@ -159,6 +177,16 @@ class Graduate:
         plt.show()
 
     def plot_realised_util(self, avg_realised_utilities):
+        """
+        
+        Args:
+        
+        avg_realised_utilities (np.array): average realised utility for each individual
+        
+        Returns:
+        A plot of the average realised utility for each individual
+        
+        """
         par = self.par
         fig, ax = plt.subplots()
         ax.plot(np.arange(1, par.N + 1), avg_realised_utilities, marker='o', label="Average Realised Utility")
@@ -167,7 +195,18 @@ class Graduate:
         plt.show()
 
     def modified_utility(self, u, c, chosen_career, j):
-        """Calculate the modified utility"""
+        """
+        
+        Args:
+        u (float): actual utility
+        c (float): cost of switching career
+        chosen_career (int): career chosen in the first period
+        j (int): career chosen in the second period
+
+        Returns:
+        float: modified utility
+        
+        """
         if j == chosen_career:
             return u
         else:
@@ -189,7 +228,8 @@ class Graduate:
         #set parameters
         par = self.par
         np.random.seed(2024)
-
+        self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
+        self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
         # Repeat first-year simulation of initial career choices and utilities
         # a. initiate empty arrays
         initial_career = np.zeros((par.N, par.K), dtype=int)
@@ -265,7 +305,7 @@ class Graduate:
 
         Returns:
         A plot of the switch share for each individual
-        
+
         """
         par = self.par
         fig, ax = plt.subplots()
