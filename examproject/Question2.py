@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 class Graduate:
     def __init__(self):
         """Initialize parameters"""
+        np.random.seed(2024)
         self.par = SimpleNamespace()
         self.par.J = 3
         self.par.N = 10
@@ -15,6 +16,7 @@ class Graduate:
 
         self.par.v = np.array([1, 2, 3])
         self.par.c = 1
+
         # Create a matrix of friends in each career for each individual
         self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
 
@@ -22,29 +24,65 @@ class Graduate:
         self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
 
     def eps_sim(self, mu, sigma, shape):
-        """Simulate epsilon values"""
-        np.random.seed(2024)
+        """
+        Args:
+        mu (float): mean of the normal distribution
+        sigma (float): standard deviation of the normal distribution
+        shape (tuple): shape of the output array
+
+        Returns:
+        np.array: array of random numbers drawn from a normal distribution
+    
+        """
         return np.random.normal(mu, sigma, shape)
 
     def avg_exp_util(self):
+        """
+        Args:
+        None
+
+        Returns:
+        np.array: average expected utility for each individual
+        
+        """
         par = self.par
         u = par.v + (1/par.K) * np.sum(self.eps_sim(0, par.sigma, (par.J, par.K)), axis=1)
         return u
     
     def avg_realised_util(self):
+        """
+        
+        Args:
+        None
+
+        Returns:
+        np.array: average realised utility for each individual
+
+        """
         par = self.par
         epsilon = self.eps_sim(0, par.sigma, (par.J, par.N))
-        u_realised = self.par.v[:, None] + epsilon
+        u_realised = par.v[:, None] + epsilon
         avg_u_realised = np.mean(u_realised, axis=1)
         return avg_u_realised
 
     def algorithm_friends(self):
+        """
+        
+        Args:
+        None
+
+        Returns:
+        np.array: career shares for each individual
+        np.array: average subjective utility for each individual
+        np.array: average realised utility for each individual
+        
+        """
         par = self.par
         # Create a matrix of friends in each career for each individual
-        self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
+        self.F = np.tile(np.arange(1, par.N + 1).reshape(par.N, 1), (1, par.J))
 
         # Create friends_in_career for each individual
-        self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
+        self.friends_in_career = [np.full(par.J, i + 1) for i in range(par.N)]
         
         # draw epsilons
         # a. initiate empty arrays
