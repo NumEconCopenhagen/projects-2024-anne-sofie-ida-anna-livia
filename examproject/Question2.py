@@ -15,6 +15,11 @@ class Graduate:
 
         self.par.v = np.array([1, 2, 3])
         self.par.c = 1
+        # Create a matrix of friends in each career for each individual
+        self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
+
+        # Create friends_in_career for each individual
+        self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
 
     def eps_sim(self, mu, sigma, shape):
         """Simulate epsilon values"""
@@ -33,44 +38,61 @@ class Graduate:
         avg_u_realised = np.mean(u_realised, axis=1)
         return avg_u_realised
 
-    def step1(self):
+    def algorithm_friends(self):
         par = self.par
+        # Create a matrix of friends in each career for each individual
+        self.F = np.tile(np.arange(1, self.par.N + 1).reshape(self.par.N, 1), (1, self.par.J))
+
+        # Create friends_in_career for each individual
+        self.friends_in_career = [np.full(self.par.J, i + 1) for i in range(self.par.N)]
         
+        # draw epsilons
+        # a. initiate empty arrays
         eps_friends = np.zeros((par.N, par.J, par.F[-1], par.K))
         
-        # a. draw J*F epsilon values for each graduate friends
+        # b. draw J*F epsilon values for each graduate friends
         for i in range(par.N):
-            Fi = par.F[i]
+            Fi = self.friends_in_career[i][0]  # Number of friends in each career for individual i
             eps_friends[i, :, :Fi, :] = self.eps_sim(0, par.sigma, (par.J, Fi, par.K))
 
-        # b. draw for individual him/herself
+        # c. draw for individual him/herself
         eps_individual = self.eps_sim(0, par.sigma, (par.N, par.J, par.K))
 
-        # c. calculate career choices and expected and actual utility
+        # calculate averages
+        # a. initiate empty arrays
         career = np.zeros((par.N, par.K), dtype=int)
         exp_u = np.zeros((par.N, par.K))
         actual_u = np.zeros((par.N, par.K))
 
-        # d. loop over individuals and friends
+        # b. simulate career choices and expected and actual utility
         for k in range(par.K):
             for i in range(par.N):
-                Fi = par.F[i]
+                # i. set number of friends in each career for individual i
+                Fi = self.friends_in_career[i][0]  
+                # ii. calculate expected utility
                 prior = np.zeros(par.J)
                 for j in range(par.J):
                     prior[j] = par.v[j] + np.mean(eps_friends[i, j, :Fi, k])
+                # iii. choose career that maximizes expected utility 
                 chosen_career = np.argmax(prior)
+                # iv. store career choice and expected and actual utility
                 career[i, k] = chosen_career
                 exp_u[i, k] = prior[chosen_career]
                 actual_u[i, k] = par.v[chosen_career] + eps_individual[i, chosen_career, k]
         
-        # Calculate the required metrics
+        # Initiate empty arrays
         career_shares = np.zeros((par.N, par.J))
         avg_subjective_utilities = np.zeros(par.N)
         avg_realised_utilities = np.zeros(par.N)
 
+        # Calculate career shares and average subjective and realised utilities
+        # i. over each graduate
         for i in range(par.N):
+            # ii. over each career
             for j in range(par.J):
+                # iii. calculate career shares
                 career_shares[i, j] = np.mean(career[i, :] == j)
+            # iv. calculate average subjective/realised utilities for each graduate
             avg_subjective_utilities[i] = np.mean(exp_u[i, :])
             avg_realised_utilities[i] = np.mean(actual_u[i, :])
 
@@ -80,7 +102,7 @@ class Graduate:
         par = self.par
         fig, ax = plt.subplots()
         for j in range(par.J):
-            ax.plot(par.F, career_shares[:, j], label=f"Career {j+1}")
+            ax.plot(np.arange(1, par.N + 1), career_shares[:, j], label=f"Career {j+1}")
         ax.set_xlabel("Individuals")
         ax.set_ylabel("Career share")
         ax.legend()
@@ -89,7 +111,7 @@ class Graduate:
     def plot_exp_util(self, avg_subjective_utilities):
         par = self.par
         fig, ax = plt.subplots()
-        ax.plot(par.F, avg_subjective_utilities, marker='o', label="Average Subjective Utility")
+        ax.plot(np.arange(1, par.N + 1), avg_subjective_utilities, marker='o', label="Average Subjective Utility")
         ax.set_xlabel("Individuals")
         ax.set_ylabel("Average expected utility")
         plt.show()
@@ -97,10 +119,11 @@ class Graduate:
     def plot_realised_util(self, avg_realised_utilities):
         par = self.par
         fig, ax = plt.subplots()
-        ax.plot(par.F, avg_realised_utilities, marker='o', label="Average Realised Utility")
+        ax.plot(np.arange(1, par.N + 1), avg_realised_utilities, marker='o', label="Average Realised Utility")
         ax.set_xlabel("Individuals")
         ax.set_ylabel("Average realised utility")
         plt.show()
+
     
   
 
