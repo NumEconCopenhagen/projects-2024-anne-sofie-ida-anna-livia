@@ -188,6 +188,7 @@ class Graduate:
         """
         #set parameters
         par = self.par
+        np.random.seed(2024)
 
         # Repeat first-year simulation of initial career choices and utilities
         # a. initiate empty arrays
@@ -257,6 +258,15 @@ class Graduate:
         return new_career, avg_new_exp_u, avg_new_actual_u, switch_share
 
     def plot_switch_share(self, switch_share):
+        """
+        
+        Args: 
+        switch_share (np.array): share of individuals who switch career
+
+        Returns:
+        A plot of the switch share for each individual
+        
+        """
         par = self.par
         fig, ax = plt.subplots()
         ax.plot(np.arange(1, par.N + 1), switch_share, marker='o', label="Switch share")
