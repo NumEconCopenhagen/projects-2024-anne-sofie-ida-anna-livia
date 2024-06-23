@@ -162,7 +162,78 @@ class Graduate:
         ax.set_ylabel("Average realised utility")
         plt.show()
 
+    def modified_utility(self, u, c, chosen_career, j):
+        """Calculate the modified utility"""
+        if j == chosen_career:
+            return u
+        else:
+            return u - c
+
+    def new_prior(self):
+        #set parameters
+        par = self.par
+
+        # Repeat first-year simulation of initial career choices and utilities
+        initial_career = np.zeros((par.N, par.K), dtype=int)
+        initial_exp_u = np.zeros((par.N, par.K))
+        initial_actual_u = np.zeros((par.N, par.K))
+
+        eps_friends = np.zeros((par.N, par.J, par.F[-1], par.K))
+        for i in range(par.N):
+            Fi = self.friends_in_career[i][0]
+            eps_friends[i, :, :Fi, :] = self.eps_sim(0, par.sigma, (par.J, Fi, par.K))
+
+        eps_individual = self.eps_sim(0, par.sigma, (par.N, par.J, par.K))
+
+        for k in range(par.K):
+            for i in range(par.N):
+                Fi = self.friends_in_career[i][0]  
+                prior = np.zeros(par.J)
+                for j in range(par.J):
+                    prior[j] = par.v[j] + np.mean(eps_friends[i, j, :Fi, k])
+                chosen_career = np.argmax(prior)
+                initial_career[i, k] = chosen_career
+                initial_exp_u[i, k] = prior[chosen_career]
+                initial_actual_u[i, k] = par.v[chosen_career] + eps_individual[i, chosen_career, k]
+
+        # add in new expected and realised utility functions
+        # a. initiate empty arrays
+        new_career = np.zeros((par.N, par.K), dtype=int)
+        new_exp_u = np.zeros((par.N, par.K))
+        new_actual_u = np.zeros((par.N, par.K))
+        switch_share = np.zeros(par.N)
+
+        #  simulate
+        for k in range(par.K):
+            # i. for each graduate
+            for i in range(par.N):
+                prior = np.zeros(par.J)
+                # if career is the same, individual knows the actual utility
+                for j in range(par.J):
+                    if j == initial_career[i, k]:
+                        prior[j] = par.v[j]+ eps_individual[i, j, k]
+                    # if career is not same, individual knows the expected utiliy based on friends - c
+                    else:
+
+                        prior[j] = initial_exp_u[i, k] - par.c
+                chosen_career = np.argmax(prior)
+                new_career[i, k] = chosen_career
+                new_exp_u[i, k] = prior[chosen_career]
+                new_actual_u[i, k] = self.modified_utility(initial_actual_u[i, k], par.c, initial_career[i, k], chosen_career)
+                if chosen_career != initial_career[i, k]:
+                    switch_share[i] += 1
+        
+        avg_new_exp_u = np.mean(new_exp_u, axis=1)
+        avg_new_actual_u = np.mean(new_actual_u, axis=1)
+        switch_share /= par.K
+
+        return new_career, avg_new_exp_u, avg_new_actual_u, switch_share
+
     
+
+    
+
+
   
 
     
