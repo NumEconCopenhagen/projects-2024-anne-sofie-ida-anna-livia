@@ -174,56 +174,79 @@ class Graduate:
             return u - c
 
     def new_prior(self):
+        """
+        
+        Args:
+        None
+
+        Returns:
+        np.array: new career choices for each individual
+        np.array: average new expected utility for each individual
+        np.array: average new actual utility for each individual
+        np.array: switch share for each individual
+
+        """
         #set parameters
         par = self.par
 
         # Repeat first-year simulation of initial career choices and utilities
+        # a. initiate empty arrays
         initial_career = np.zeros((par.N, par.K), dtype=int)
         initial_exp_u = np.zeros((par.N, par.K))
         initial_actual_u = np.zeros((par.N, par.K))
-
+        
+        # b. draw epsilons for friends and individual
         eps_friends = np.zeros((par.N, par.J, par.F[-1], par.K))
         for i in range(par.N):
             Fi = self.friends_in_career[i][0]
             eps_friends[i, :, :Fi, :] = self.eps_sim(0, par.sigma, (par.J, Fi, par.K))
-
         eps_individual = self.eps_sim(0, par.sigma, (par.N, par.J, par.K))
 
+        # c. simulate career choices and expected and actual utility
         for k in range(par.K):
+            # i. for each graduate
             for i in range(par.N):
+                # ii. set number of friends in each career for individual i
                 Fi = self.friends_in_career[i][0]  
                 prior = np.zeros(par.J)
+                # iii. for each career, calculate expected utility
                 for j in range(par.J):
                     prior[j] = par.v[j] + np.mean(eps_friends[i, j, :Fi, k])
+                # iv. choose career that maximizes expected utility
                 chosen_career = np.argmax(prior)
                 initial_career[i, k] = chosen_career
                 initial_exp_u[i, k] = prior[chosen_career]
                 initial_actual_u[i, k] = par.v[chosen_career] + eps_individual[i, chosen_career, k]
 
-        # add in new expected and realised utility functions
+        # add in new expected and realised utility functions where individuals know the utility
+        # of their current career and the expected utility of other careers
+
         # a. initiate empty arrays
         new_career = np.zeros((par.N, par.K), dtype=int)
         new_exp_u = np.zeros((par.N, par.K))
         new_actual_u = np.zeros((par.N, par.K))
         switch_share = np.zeros(par.N)
 
-        # simulate
+        # b. simulate
         for k in range(par.K):
             # i. for each graduate
             for i in range(par.N):
                 prior = np.zeros(par.J)
-                # if career is the same, individual knows the actual utility
+                # ii. if career is the same, individual knows the actual utility
                 for j in range(par.J):
                     if j == initial_career[i, k]:
                         prior[j] = par.v[j]+ eps_individual[i, j, k]
-                    # if career is not same, individual knows the expected utiliy based on friends - c
+                    # iii. if career is not same, individual knows the expected utiliy based on friends - c
                     else:
-                        prior[j] = initial_exp_u[i, k] - par.c
-                # choose career that maximizes expected utility
+                        prior[j] = par.v[j] + np.mean(eps_friends[i, j, :Fi, k]) - par.c
+                # iv. choose career that maximizes expected utility
                 chosen_career = np.argmax(prior)
+
                 new_career[i, k] = chosen_career
                 new_exp_u[i, k] = prior[chosen_career]
                 new_actual_u[i, k] = self.modified_utility(initial_actual_u[i, k], par.c, initial_career[i, k], chosen_career)
+                
+                # v. calculate share of individuals who switch career
                 if chosen_career != initial_career[i, k]:
                     switch_share[i] += 1
         
@@ -232,6 +255,15 @@ class Graduate:
         switch_share /= par.K
 
         return new_career, avg_new_exp_u, avg_new_actual_u, switch_share
+
+    def plot_switch_share(self, switch_share):
+        par = self.par
+        fig, ax = plt.subplots()
+        ax.plot(np.arange(1, par.N + 1), switch_share, marker='o', label="Switch share")
+        ax.set_xlabel("Individuals")
+        ax.set_ylabel("Switch share")
+        plt.show()
+    
 
     
 
